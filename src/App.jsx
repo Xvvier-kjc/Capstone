@@ -55,7 +55,7 @@ function App() {
   return (
     <AuthProvider>
       <QueryClientProvider client={queryClientInstance}>
-        <Router>
+        <Router basename="/Capstone"> {/* <--- Update this specific line right here */}
           <ScrollToTop />
           <AuthenticatedApp />
         </Router>
