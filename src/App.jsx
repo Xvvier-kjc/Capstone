@@ -52,9 +52,10 @@ const AuthenticatedApp = () => {
 
 function App() {
 
+   // Render the main app
   return (
     <Routes>
-      {/* Add BOTH variations so it matches perfectly whether a trailing slash is present or not */}
+      {/* Explicitly tell the router to accept both baseline URL variations */}
       <Route path="/" element={<Home />} />
       <Route path="/Capstone/" element={<Home />} /> 
       
@@ -62,7 +63,9 @@ function App() {
         <Route index element={<Team />} />
         <Route path=":memberId" element={<MemberDossier />} />
       </Route>
-      <Route path="*" element={<PageNotFound />} />
+      
+      {/* If any auth redirects drop out, default back to the home page instead of breaking */}
+      <Route path="*" element={<Home />} /> 
     </Routes>
   );
 }

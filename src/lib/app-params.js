@@ -24,5 +24,8 @@ const getAppParams = () => {
 
 
 export const appParams = {
-	...getAppParams()
-}
+  appId: 'local-dev',
+  token: 'guest-session', // <--- Set a default fallback token string here
+  functionsVersion: 'v1',
+  appBaseUrl: 'https://xvvier-kjc.github.io/Capstone/'
+};
