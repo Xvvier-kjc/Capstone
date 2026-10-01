@@ -35,33 +35,38 @@ const AuthenticatedApp = () => {
     }
   }
 
-  // Render the main app
+  // 1. Remove the <Router> tags from the App function below, and place them HERE instead:
+const AuthenticatedApp = () => {
+  // Keep your commented out or bypassed auth hooks here...
+
   return (
     <Routes>
-      {/* Add your page Route elements here */}
       <Route path="/" element={<Home />} />
+      <Route path="/Capstone/" element={<Home />} /> 
       <Route path="/team" element={<TeamLayout />}>
         <Route index element={<Team />} />
         <Route path=":memberId" element={<MemberDossier />} />
       </Route>
-      <Route path="*" element={<PageNotFound />} />
+      <Route path="*" element={<Home />} />
     </Routes>
   );
 };
 
-
+// 2. Update your main App component to wrap your Router around everything at the topmost level:
 function App() {
   return (
-    <AuthProvider>
-      <QueryClientProvider client={queryClientInstance}>
-        <Router basename="/"> {/* <--- Change this back to a clean "/" */}
+    <Router basename="/Capstone"> {/* <-- Router sits at the very top now! */}
+      <AuthProvider>
+        <QueryClientProvider client={queryClientInstance}>
           <ScrollToTop />
           <AuthenticatedApp />
-        </Router>
-        <Toaster />
-      </QueryClientProvider>
-    </AuthProvider>
+          <Toaster />
+        </QueryClientProvider>
+      </AuthProvider>
+    </Router>
   )
 }
 
-export default App
+
+
+export default App;
