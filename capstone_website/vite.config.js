@@ -11,4 +11,8 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+
+  build: {
+    outDir: 'docs', // <--- Add this line here so Vite outputs to a 'docs' folder
+  }
 })
