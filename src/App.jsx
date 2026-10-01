@@ -53,16 +53,18 @@ const AuthenticatedApp = () => {
 function App() {
 
   return (
-    <AuthProvider>
-      <QueryClientProvider client={queryClientInstance}>
-        <Router basename="/Capstone"> {/* <--- Update this specific line right here */}
-          <ScrollToTop />
-          <AuthenticatedApp />
-        </Router>
-        <Toaster />
-      </QueryClientProvider>
-    </AuthProvider>
-  )
+    <Routes>
+      {/* Add BOTH variations so it matches perfectly whether a trailing slash is present or not */}
+      <Route path="/" element={<Home />} />
+      <Route path="/Capstone/" element={<Home />} /> 
+      
+      <Route path="/team" element={<TeamLayout />}>
+        <Route index element={<Team />} />
+        <Route path=":memberId" element={<MemberDossier />} />
+      </Route>
+      <Route path="*" element={<PageNotFound />} />
+    </Routes>
+  );
 }
 
 export default App
