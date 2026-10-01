@@ -51,23 +51,17 @@ const AuthenticatedApp = () => {
 
 
 function App() {
-
-   // Render the main app
   return (
-    <Routes>
-      {/* Explicitly tell the router to accept both baseline URL variations */}
-      <Route path="/" element={<Home />} />
-      <Route path="/Capstone/" element={<Home />} /> 
-      
-      <Route path="/team" element={<TeamLayout />}>
-        <Route index element={<Team />} />
-        <Route path=":memberId" element={<MemberDossier />} />
-      </Route>
-      
-      {/* If any auth redirects drop out, default back to the home page instead of breaking */}
-      <Route path="*" element={<Home />} /> 
-    </Routes>
-  );
+    <AuthProvider>
+      <QueryClientProvider client={queryClientInstance}>
+        <Router basename="/"> {/* <--- Change this back to a clean "/" */}
+          <ScrollToTop />
+          <AuthenticatedApp />
+        </Router>
+        <Toaster />
+      </QueryClientProvider>
+    </AuthProvider>
+  )
 }
 
 export default App

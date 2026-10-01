@@ -5,14 +5,13 @@ import path from 'path'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: '/Capstone/',
+  base: './', // <--- Change this to EXACTLY './' to fix absolute path breaking in Incognito
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
   },
-
   build: {
-    outDir: 'docs', // <--- Add this line here so Vite outputs to a 'docs' folder
+    outDir: 'docs',
   }
 })
