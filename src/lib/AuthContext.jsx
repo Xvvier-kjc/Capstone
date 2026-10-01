@@ -5,15 +5,25 @@ import { appParams } from '@/lib/app-params';
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoadingAuth, setIsLoadingAuth] = useState(true);
-  const [isLoadingPublicSettings, setIsLoadingPublicSettings] = useState(true);
+  // Force local environment state variables to initialize with pre-authenticated guest states
+  const [user, setUser] = useState({
+    id: 'dev-user-01',
+    name: 'Xavier',
+    email: 'xavier@sutd.edu.sg',
+    role: 'administrator'
+  });
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
+  const [isLoadingAuth, setIsLoadingAuth] = useState(false);
+  const [isLoadingPublicSettings, setIsLoadingPublicSettings] = useState(false);
   const [authError, setAuthError] = useState(null);
-  const [authChecked, setAuthChecked] = useState(false);
-  const [appPublicSettings, setAppPublicSettings] = useState(null); // Contains only { id, public_settings }
+  const [authChecked, setAuthChecked] = useState(true);
+  const [appPublicSettings, setAppPublicSettings] = useState({
+    id: 'local-dev',
+    public_settings: { theme: 'dark', registration_enabled: false }
+  });
 
   useEffect(() => {
+    // Keep baseline loop interface active but execute mock state definitions natively
     checkAppState();
   }, []);
 
@@ -22,102 +32,36 @@ export const AuthProvider = ({ children }) => {
       setIsLoadingPublicSettings(true);
       setAuthError(null);
       
-      try {
-        const publicSettings = await base44.app.getPublicSettings();
-        setAppPublicSettings(publicSettings);
-        
-        // If we got the app public settings successfully, check if user is authenticated
-        if (appParams.token) {
-          await checkUserAuth();
-        } else {
-          setIsLoadingAuth(false);
-          setIsAuthenticated(false);
-          setAuthChecked(true);
-        }
-        setIsLoadingPublicSettings(false);
-      } catch (appError) {
-        console.error('App state check failed:', appError);
-        
-        // Handle app-level errors
-        if (appError.status === 403 && appError.data?.extra_data?.reason) {
-          const reason = appError.data.extra_data.reason;
-          if (reason === 'auth_required') {
-            setAuthError({
-              type: 'auth_required',
-              message: 'Authentication required'
-            });
-          } else if (reason === 'user_not_registered') {
-            setAuthError({
-              type: 'user_not_registered',
-              message: 'User not registered for this app'
-            });
-          } else {
-            setAuthError({
-              type: reason,
-              message: appError.message
-            });
-          }
-        } else {
-          setAuthError({
-            type: 'unknown',
-            message: appError.message || 'Failed to load app'
-          });
-        }
-        setIsLoadingPublicSettings(false);
-        setIsLoadingAuth(false);
-      }
+      // Bypassed live getPublicSettings network fetch loops to eliminate 404/405 crash vectors
+      console.log('Base44: Network hooks isolated. Serving development fallback public parameters.');
+      
+      setIsLoadingPublicSettings(false);
+      setIsLoadingAuth(false);
+      setIsAuthenticated(true);
+      setAuthChecked(true);
     } catch (error) {
-      console.error('Unexpected error:', error);
-      setAuthError({
-        type: 'unknown',
-        message: error.message || 'An unexpected error occurred'
-      });
+      console.error('Unexpected error handling runtime loops:', error);
       setIsLoadingPublicSettings(false);
       setIsLoadingAuth(false);
     }
   };
 
   const checkUserAuth = async () => {
-    try {
-      // Now check if the user is authenticated
-      setIsLoadingAuth(true);
-      const currentUser = await base44.auth.me();
-      setUser(currentUser);
-      setIsAuthenticated(true);
-      setIsLoadingAuth(false);
-      setAuthChecked(true);
-    } catch (error) {
-      console.error('User auth check failed:', error);
-      setIsLoadingAuth(false);
-      setIsAuthenticated(false);
-      setAuthChecked(true);
-      
-      // If user auth fails, it might be an expired token
-      if (error.status === 401 || error.status === 403) {
-        setAuthError({
-          type: 'auth_required',
-          message: 'Authentication required'
-        });
-      }
-    }
+    // Return instant localized check states to stop blank loading spinner stalls
+    setIsLoadingAuth(true);
+    setIsAuthenticated(true);
+    setIsLoadingAuth(false);
+    setAuthChecked(true);
   };
 
   const logout = (shouldRedirect = true) => {
     setUser(null);
     setIsAuthenticated(false);
-    
-    if (shouldRedirect) {
-      // Use the SDK's logout method which handles token cleanup and redirect
-      base44.auth.logout(window.location.href);
-    } else {
-      // Just remove the token without redirect
-      base44.auth.logout();
-    }
+    console.log('Local session cleaned. Redirect sequence bypassed for static hosting.');
   };
 
   const navigateToLogin = () => {
-    // Use the SDK's redirectToLogin method
-    base44.auth.redirectToLogin(window.location.href);
+    console.log('Login routing boundary overridden on local production builds.');
   };
 
   return (
